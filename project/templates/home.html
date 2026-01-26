@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Score Predictor - AI-Powered Academic Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #6366f1, transparent);
+            top: -100px;
+            right: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #a855f7, transparent);
+            bottom: -50px;
+            left: -100px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            position: relative;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: #a855f7;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-signup {
+            padding: 0.6rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-signup:hover {
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+
+        .btn-login {
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 7, 16, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(92vw, 480px);
+            background: rgba(20, 20, 40, 0.95);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.3s ease;
+        }
+
+        .modal-card h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-card p {
+            color: #b0b0c0;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+
+        .btn-google {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-google:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            padding: 4rem 5%;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #b0b0c0;
+            margin-bottom: 2rem;
+        }
+
+        .email-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .email-input::placeholder {
+            color: #707080;
+        }
+
+        .btn-started {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        .btn-started:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.4);
+        }
+
+        .subtext {
+            font-size: 0.9rem;
+            color: #808090;
+            margin-top: 1rem;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 500px;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 650px;
+            border-radius: 20px;
+        }
+
+
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 2rem 3%;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+                font-size: 0.85rem;
+            }
+
+            .email-input-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .score-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <nav>
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            ScorePredictor
+        </div>
+        <div class="nav-buttons">
+            <a class="btn-signup" href="https://colab.research.google.com/drive/1umLEIAuT6BHiDAaG3VHLKAc1-PmkdMGk?usp=sharing" target="_blank" rel="noopener">Google Colab File</a>
+            <a class="btn-login" href="https://github.com/" target="_blank" rel="noopener">Github Code</a>
+            {% if current_user %}
+                <a class="btn-login" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <button class="btn-login" type="button" onclick="openLoginPopup()">Login with Google</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Predict Your Academic Future with AI</h1>
+            <p>Get intelligent score predictions powered by advanced machine learning. Analyze your performance patterns and discover personalized insights to excel in your studies.</p>
+            
+            <div class="email-input-group">
+            {% if current_user %}
+            <a href="{{ url_for('predict') }}" class="btn-started">Predict Your Student Score Now</a>
+            {% else %}
+            <button type="button" class="btn-started" onclick="openLoginPopup()">Predict Your Student Score Now</button>
+            {% endif %}
+            </div>
+            
+            <p class="subtext">Join thousands of students already using ScorePredictor to boost their academic success</p>
+        </div>
+
+        <div class="hero-visual">
+            <img src="static/ai-code-generator-robot_1637286-removebg-preview.png" alt="AI Academic Prediction" class="hero-image">
+        </div>
+    </section>
+
+    <div class="modal-backdrop" id="loginModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+            <h2 id="loginTitle">Sign in with Google</h2>
+            <p>Use your Google account to continue to the student score predictor.</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" type="button" onclick="closeLoginPopup()">Cancel</button>
+                <a class="btn-google" href="{{ url_for('auth_google') }}">Continue with Google</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginModal = document.getElementById('loginModal');
+
+        function openLoginPopup() {
+            if (loginModal) {
+                loginModal.classList.add('show');
+                loginModal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeLoginPopup() {
+            if (loginModal) {
+                loginModal.classList.remove('show');
+                loginModal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        if (loginModal) {
+            loginModal.addEventListener('click', (event) => {
+                if (event.target === loginModal) {
+                    closeLoginPopup();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
